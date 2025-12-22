@@ -40,6 +40,7 @@ export default {
     });
 
     if (amount < minMessages || amount > maxMessages) {
+      console.log(amount);
       return interaction.editReply({
         content: `Informe um número entre ${minMessages} e ${maxMessages}.`,
       });
