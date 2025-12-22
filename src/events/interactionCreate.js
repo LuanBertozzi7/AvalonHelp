@@ -7,7 +7,6 @@ export default {
     if (!interaction.isChatInputCommand()) return; // is command?
     const command = interaction.client.commands.get(interaction.commandName);
     if (!command) return;
-    console.log(interaction);
 
     await command.execute(interaction);
   },

@@ -6,7 +6,6 @@ import interactionCreate from "./events/interactionCreate.js";
 export const client = new Client({ intents });
 await loadCommands(client);
 
-client.on(
-  interactionCreate.name,
-  async (...args) => interactionCreate.execute(...args),
+client.on(interactionCreate.name, async (...args) =>
+  interactionCreate.execute(...args)
 );

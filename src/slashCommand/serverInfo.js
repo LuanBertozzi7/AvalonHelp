@@ -20,31 +20,30 @@ export default {
       .setColor(0x2f3136)
       .setTitle("Informações Sobre o Servidor!")
       .setThumbnail(guild.iconURL({ dynamic: true }))
-      .setURL("https://discord.gg/urAU9Uv3")
       .addFields(
         // Owner
         {
           name: "Dono",
           value: `${(await owner).user.tag}`,
-          inline: false,
+          inline: true,
         },
         // Server Name
         {
           name: "Nome:",
           value: `**${guild.name}**`,
-          inline: false,
+          inline: true,
         },
         // total members
         {
           name: "Membros:",
           value: `**${guild.memberCount}**`,
-          inline: false,
+          inline: true,
         },
         // channels list
         {
           name: "Canais:",
           value: `**${guild.channels.cache.size}**`,
-          inline: false,
+          inline: true,
         },
         // roles list
         {
@@ -52,7 +51,12 @@ export default {
           value: `** - ${roles}**`,
           inline: false,
         }
-      );
+      )
+      .setFooter({
+        text: `Servidor: ${guild.name}`,
+        iconURL: guild.iconURL({ dynamic: true }),
+      })
+      .setTimestamp();
     await interaction.reply({ embeds: [embed] });
   },
 };

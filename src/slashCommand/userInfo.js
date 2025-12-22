@@ -3,10 +3,19 @@ import { EmbedBuilder, SlashCommandBuilder } from "discord.js";
 export default {
   data: new SlashCommandBuilder()
     .setName("userinfo")
-    .setDescription("Obter informações sobre um usuário"),
+    .setDescription("Obter informações sobre um usuário")
+    .addUserOption((option) =>
+      option
+        .setName("username")
+        .setDescription("Selecione o usuário que deseja obter informações")
+        .setRequired(false)
+    ),
+
   async execute(interaction) {
-    const user = interaction.user;
-    const member = interaction.member;
+    const user = interaction.options.getUser("username") || interaction.user;
+    console.log(user);
+    const member =
+      interaction.options.getMember("username") || interaction.member;
     const guild = interaction.guild;
 
     const roles =
@@ -17,7 +26,7 @@ export default {
 
     const embed = new EmbedBuilder()
       .setColor(0x2f3136)
-      .setTitle("Informações")
+      .setTitle("Informações sobre o usuário!")
       .setThumbnail(user.displayAvatarURL({ dynamic: true }))
       .addFields(
         // User Name
