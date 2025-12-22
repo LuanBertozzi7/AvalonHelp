@@ -1,8 +1,8 @@
 import { Events } from "discord.js";
 import "dotenv/config";
 // Instance && Intents
-import { intents } from "./src/config/intents.js";
 import { client } from "./src/client.js";
+import { loadEvents } from "./src/loaders/eventLoader.js";
 
 // error handling
 process.on("unhandledRejection", (reason, promise) => {
@@ -12,6 +12,9 @@ process.on("unhandledRejection", (reason, promise) => {
 process.on("uncaughtException", (error) => {
   console.error("Uncaught Exception:", error);
 });
+
+// load events
+await loadEvents(client);
 
 client.once(Events.ClientReady, (readyClient) => {
   console.log(`${readyClient.user.tag}`);
