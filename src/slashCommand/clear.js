@@ -1,16 +1,25 @@
-import { SlashCommandBuilder, EmbedBuilder } from "discord.js";
+import {
+  SlashCommandBuilder,
+  EmbedBuilder,
+  PermissionFlagsBits,
+} from "discord.js";
+
+const minMessages = 1;
+const maxMessages = 100;
 
 export default {
   data: new SlashCommandBuilder()
     .setName("clear")
-    .setDescription("clear messages in a channel")
+    .setDescription("Apaga mensagens no canal")
     .addIntegerOption((option) =>
       option
-        .setName("amount")
-        .setDescription("Number of messages to delete")
+        .setName("quantidade")
+        .setDescription(
+          `Número de mensagens a serem apagadas - entre ${minMessages} e ${maxMessages}`
+        )
         .setRequired(true)
-        .setMaxValue(100)
-        .setMinValue(1)
+        .setMaxValue(maxMessages)
+        .setMinValue(minMessages)
     ),
 
   checkMessageTime(message) {
@@ -23,13 +32,37 @@ export default {
   },
 
   async execute(interaction) {
-    const amount = interaction.options.getInteger("amount");
+    const amount = interaction.options.getInteger("quantidade");
+    let totalMessagesDeleted = 0;
 
     await interaction.deferReply({
       flags: 64, // MessageFlags.Ephemeral (ephemeral is deprecated in discord.js v14)
     });
 
-    let totalMessagesDeleted = 0;
+    if (amount < minMessages || amount > maxMessages) {
+      return interaction.editReply({
+        content: `Informe um número entre ${minMessages} e ${maxMessages}.`,
+      });
+    }
+
+    if (!interaction.channel || !interaction.channel.isTextBased()) {
+      return interaction.editReply({
+        content: "Use este comando somente em canais de textos.",
+      });
+    }
+
+    const botPermissions = interaction.channel.permissionsFor(
+      interaction.client.user
+    );
+
+    if (
+      !botPermissions ||
+      !botPermissions.has(PermissionFlagsBits.ManageMessages)
+    ) {
+      return interaction.editReply({
+        content: "Eu não tenho permissão para gerenciar mensagens neste canal!",
+      });
+    }
 
     try {
       // search messages
@@ -37,25 +70,20 @@ export default {
         limit: amount,
       });
 
+      const recentMessages = messages.filter(
+        (msg) => !this.checkMessageTime(msg)
+      );
+
+      const oldMessages = messages.filter((msg) => this.checkMessageTime(msg));
+
       if (messages.size === 0) {
         return await interaction.editReply({
           content: "❌ Nenhuma mensagem encontrada para deletar.",
         });
       }
 
-      const oldMessages = [];
-      const recentMessages = [];
-
-      messages.forEach((msg) => {
-        if (this.checkMessageTime(msg)) {
-          oldMessages.push(msg);
-        } else {
-          recentMessages.push(msg);
-        }
-      });
-
       // Delete recent messages in bulk
-      if (recentMessages.length > 0) {
+      if (recentMessages.size > 0) {
         try {
           const deletedBulk = await interaction.channel.bulkDelete(
             recentMessages,
@@ -63,19 +91,23 @@ export default {
           );
           totalMessagesDeleted += deletedBulk.size;
         } catch (error) {
-          console.log(`Erro ao deletar em bulk: ${error}`);
+          console.error("/clear bulk delete error:", error);
         }
       }
 
       // Delete old messages one by one
-      if (oldMessages.length > 0) {
-        for (const msg of oldMessages) {
+      if (oldMessages.size > 0) {
+        for (const msg of oldMessages.values()) {
           try {
             await msg.delete();
             totalMessagesDeleted++;
             await new Promise((resolve) => setTimeout(resolve, 1000)); // wait 1 second, to avoid discord rate limits
           } catch (error) {
-            console.log(`error: ${error}`);
+            console.error(
+              "error deleting old message in /clear: ",
+              msg.id,
+              error
+            );
           }
         }
       }
@@ -92,9 +124,10 @@ export default {
         embeds: [embed],
       });
     } catch (error) {
-      console.log(error);
+      console.error("/clear command error:", error);
+
       await interaction.editReply({
-        content: " error, verify bot permissions!",
+        content: "Ocorreu um erro inesperado ao tentar deletar mensagens.",
       });
     }
   },
