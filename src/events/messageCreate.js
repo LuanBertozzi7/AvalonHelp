@@ -20,15 +20,7 @@ export default {
       content.includes("avalon") || content.includes("avalonhelp");
 
     // 3. Stop / end conversation commands
-    const stopCommands = [
-      "pode parar de falar",
-      "pare de responder avalon",
-      "pare avalon",
-      "para",
-      "fique quieto",
-      "fique quieto avalon",
-      "parar avalon",
-    ];
+    const stopCommands = ["!stop", "!avalon"];
 
     const shouldStop = stopCommands.some(
       (cmd) => content === cmd || content.startsWith(cmd + " ")
@@ -42,26 +34,7 @@ export default {
     }
 
     // 5. Generic / social messages that should NOT trigger the bot
-    const genericMessages = [
-      "oi",
-      "ola",
-      "olá",
-      "eae",
-      "e aí",
-      "eai",
-      "hm",
-      "kk",
-      "kkk",
-      "haha",
-      "boa",
-      "boa noite",
-      "bom dia",
-      "boa tarde",
-      "eae galera",
-      "eae galenos",
-      "salve",
-      "fala",
-    ];
+    const genericMessages = ["boa noite", "bom dia", "boa tarde"];
 
     const isGenericMessage = genericMessages.some(
       (msg) => content === msg || content.startsWith(msg + " ")
