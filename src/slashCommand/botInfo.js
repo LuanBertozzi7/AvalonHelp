@@ -53,7 +53,9 @@ export default {
         },
         {
           name: "Links",
-          value: "https://github.com/LuanBertozzi7/AvalonHelp",
+          value: [
+            `https://github.com/LuanBertozzi7/AvalonHelp``https://discord.js.org/``https://developer.mozilla.org/pt-BR/docs/Web/JavaScript`,
+          ],
           inline: false,
         }
       )
