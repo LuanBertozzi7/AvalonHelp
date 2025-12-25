@@ -57,7 +57,7 @@ export default {
             `https://github.com/LuanBertozzi7/AvalonHelp`,
             `https://discord.js.org/`,
             `https://developer.mozilla.org/pt-BR/docs/Web/JavaScript`,
-          ],
+          ].join("\n"),
           inline: false,
         }
       )
