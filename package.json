@@ -4,7 +4,8 @@
   "main": "index.js",
   "scripts": {
     "dev": "node index.js",
-    "nodemon": "nodemon index.js"
+    "nodemon": "nodemon index.js",
+    "cleanup-commands": "node src/cleanupCommands.js"
   },
   "keywords": [],
   "type": "module",
