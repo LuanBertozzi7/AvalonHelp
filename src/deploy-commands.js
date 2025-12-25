@@ -7,7 +7,7 @@ import { REST, Routes } from "discord.js";
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 
-const rest = new REST({ version: "10" }).setToken(process.env.TOKEN);
+const rest = new REST({ version: "10" }).setToken(process.env.BOT_TOKEN);
 
 async function loadSlashCommands() {
   const commandsDir = path.join(__dirname, "slashCommand");
@@ -31,10 +31,10 @@ async function deploy() {
   const commands = await loadSlashCommands();
   const route = process.env.GUILD_ID
     ? Routes.applicationGuildCommands(
-        process.env.CLIENT_ID,
+        process.env.BOT_ID,
         process.env.GUILD_ID
       )
-    : Routes.applicationCommands(process.env.CLIENT_ID);
+    : Routes.applicationCommands(process.env.BOT_ID);
 
   try {
     console.log(

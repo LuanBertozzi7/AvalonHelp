@@ -35,4 +35,4 @@ client.once(Events.ClientReady, (readyClient) => {
 
 // load events
 await loadEvents(client);
-client.login(process.env.TOKEN);
+client.login(process.env.BOT_TOKEN);
