@@ -20,7 +20,7 @@ export default {
 
     const embed = new EmbedBuilder()
       .setColor(0x2f3136)
-      .setTitle("AvalonHelp — Informações Gerais")
+      .setTitle("AvalonHelp")
       .setThumbnail(botUser.displayAvatarURL({ size: 512, dynamic: true }))
       .addFields(
         {
@@ -31,6 +31,10 @@ export default {
               (acc, guild) => acc + guild.memberCount,
               0
             )}`,
+            `**Author:** [Luan Bertozzi](https://github.com/LuanBertozzi7)`,
+            `**Uptime:** ${Math.floor(
+              interaction.client.uptime / 1000 / 60
+            )} minutos`,
           ].join("\n"),
           inline: true,
         },
@@ -48,7 +52,7 @@ export default {
           inline: false,
         },
         {
-          name: "🔗 Links",
+          name: "Links",
           value: "https://github.com/LuanBertozzi7/AvalonHelp",
           inline: false,
         }
