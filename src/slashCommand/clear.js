@@ -2,10 +2,16 @@ import {
   SlashCommandBuilder,
   EmbedBuilder,
   PermissionFlagsBits,
+  MessageFlags,
 } from "discord.js";
 
 const minMessages = 1;
 const maxMessages = 100;
+
+function isOlderThan14Days(message) {
+  const diff = Date.now() - message.createdTimestamp;
+  return diff > 14 * 24 * 60 * 60 * 1000;
+}
 
 export default {
   data: new SlashCommandBuilder()
@@ -15,40 +21,36 @@ export default {
       option
         .setName("quantidade")
         .setDescription(
-          `Número de mensagens a serem apagadas - entre ${minMessages} e ${maxMessages}`
+          `Número de mensagens a serem apagadas (entre ${minMessages} e ${maxMessages})`
         )
         .setRequired(true)
-        .setMaxValue(maxMessages)
         .setMinValue(minMessages)
+        .setMaxValue(maxMessages)
     ),
-
-  checkMessageTime(message) {
-    const messageTimestamp = message.createdTimestamp;
-    const currentTimestamp = Date.now();
-    const differenceInMilliSeconds = currentTimestamp - messageTimestamp;
-    const differenceInDays = differenceInMilliSeconds / (1000 * 60 * 60 * 24);
-
-    return differenceInDays > 14;
-  },
 
   async execute(interaction) {
     const amount = interaction.options.getInteger("quantidade");
-    let totalMessagesDeleted = 0;
 
-    await interaction.deferReply({
-      flags: 64, // MessageFlags.Ephemeral (ephemeral is deprecated in discord.js v14)
-    });
-
-    if (amount < minMessages || amount > maxMessages) {
-      console.log(amount);
-      return interaction.editReply({
-        content: `Informe um número entre ${minMessages} e ${maxMessages}.`,
+    if (!interaction.inGuild()) {
+      return interaction.reply({
+        content: "Este comando só pode ser usado em servidores.",
+        flags: MessageFlags.Ephemeral,
       });
     }
 
-    if (!interaction.channel || !interaction.channel.isTextBased()) {
-      return interaction.editReply({
-        content: "Use este comando somente em canais de textos.",
+    if (!interaction.channel?.isTextBased()) {
+      return interaction.reply({
+        content: "Use este comando apenas em canais de texto.",
+        flags: MessageFlags.Ephemeral,
+      });
+    }
+
+    if (
+      !interaction.member.permissions.has(PermissionFlagsBits.ManageMessages)
+    ) {
+      return interaction.reply({
+        content: "Você não tem permissão para apagar mensagens.",
+        flags: MessageFlags.Ephemeral,
       });
     }
 
@@ -60,65 +62,57 @@ export default {
       !botPermissions ||
       !botPermissions.has(PermissionFlagsBits.ManageMessages)
     ) {
-      return interaction.editReply({
-        content: "Eu não tenho permissão para gerenciar mensagens neste canal!",
+      return interaction.reply({
+        content: "Eu não tenho permissão para gerenciar mensagens neste canal.",
+        flags: MessageFlags.Ephemeral,
       });
     }
 
+    await interaction.deferReply({
+      flags: MessageFlags.Ephemeral,
+    });
+
+    let totalMessagesDeleted = 0;
+
     try {
-      // search messages
       const messages = await interaction.channel.messages.fetch({
         limit: amount,
       });
 
-      const recentMessages = messages.filter(
-        (msg) => !this.checkMessageTime(msg)
-      );
-
-      const oldMessages = messages.filter((msg) => this.checkMessageTime(msg));
-
       if (messages.size === 0) {
-        return await interaction.editReply({
+        return interaction.editReply({
           content: "❌ Nenhuma mensagem encontrada para deletar.",
         });
       }
 
-      // Delete recent messages in bulk
+      const recentMessages = messages.filter((msg) => !isOlderThan14Days(msg));
+
+      const oldMessages = messages.filter(isOlderThan14Days);
+
       if (recentMessages.size > 0) {
-        try {
-          const deletedBulk = await interaction.channel.bulkDelete(
-            recentMessages,
-            true
-          );
-          totalMessagesDeleted += deletedBulk.size;
-        } catch (error) {
-          console.error("/clear bulk delete error:", error);
-        }
+        const deleted = await interaction.channel.bulkDelete(
+          recentMessages,
+          true
+        );
+        totalMessagesDeleted += deleted.size;
       }
 
-      // Delete old messages one by one
-      if (oldMessages.size > 0) {
-        for (const msg of oldMessages.values()) {
-          try {
-            await msg.delete();
-            totalMessagesDeleted++;
-            await new Promise((resolve) => setTimeout(resolve, 1000)); // wait 1 second, to avoid discord rate limits
-          } catch (error) {
-            console.error(
-              "error deleting old message in /clear: ",
-              msg.id,
-              error
-            );
-          }
+      for (const msg of oldMessages.values()) {
+        try {
+          await msg.delete();
+          totalMessagesDeleted++;
+          await new Promise((r) => setTimeout(r, 1000));
+        } catch (err) {
+          console.error("Erro ao deletar mensagem antiga:", msg.id, err);
         }
       }
 
       const embed = new EmbedBuilder()
         .setTitle("🗑️ Mensagens Deletadas")
         .setDescription(
-          `**Total deletado:** ${totalMessagesDeleted} mensagem(ns)\n`
+          `**Total apagado:** ${totalMessagesDeleted} mensagem(ns)`
         )
-        .setColor(0x00ff00)
+        .setColor(0x2ecc71)
         .setTimestamp();
 
       await interaction.editReply({
@@ -128,7 +122,7 @@ export default {
       console.error("/clear command error:", error);
 
       await interaction.editReply({
-        content: "Ocorreu um erro inesperado ao tentar deletar mensagens.",
+        content: "❌ Ocorreu um erro inesperado ao tentar apagar as mensagens.",
       });
     }
   },
