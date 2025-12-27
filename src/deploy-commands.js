@@ -50,8 +50,8 @@ async function loadSlashCommands() {
       console.warn(
         `[WARNING] Ignorando ${path.relative(
           commandsDir,
-          filePath
-        )}: falta export default com .data`
+          filePath,
+        )}: falta export default com .data`,
       );
       continue;
     }
@@ -60,8 +60,8 @@ async function loadSlashCommands() {
       console.log(
         `[INFO] Ignorando ${command.data.name} (${path.relative(
           commandsDir,
-          filePath
-        )}): fora do filtro`
+          filePath,
+        )}): fora do filtro`,
       );
       continue;
     }
@@ -99,7 +99,7 @@ async function deploy() {
 
     await rest.put(route, { body: commands });
     console.log(
-      "Slash command's registrado com sucesso via deploy-commands.js"
+      "Slash command's registrado com sucesso via deploy-commands.js",
     );
   } catch (e) {
     console.error("Erro ao registrar comandos via deploy-commands", e);

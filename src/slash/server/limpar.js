@@ -15,17 +15,17 @@ function isOlderThan14Days(message) {
 
 export default {
   data: new SlashCommandBuilder()
-    .setName("clear")
+    .setName("limpar")
     .setDescription("Apaga mensagens no canal")
     .addIntegerOption((option) =>
       option
         .setName("quantidade")
         .setDescription(
-          `Número de mensagens a serem apagadas (entre ${minMessages} e ${maxMessages})`
+          `Número de mensagens a serem apagadas (entre ${minMessages} e ${maxMessages})`,
         )
         .setRequired(true)
         .setMinValue(minMessages)
-        .setMaxValue(maxMessages)
+        .setMaxValue(maxMessages),
     ),
 
   async execute(interaction) {
@@ -55,7 +55,7 @@ export default {
     }
 
     const botPermissions = interaction.channel.permissionsFor(
-      interaction.client.user
+      interaction.client.user,
     );
 
     if (
@@ -92,7 +92,7 @@ export default {
       if (recentMessages.size > 0) {
         const deleted = await interaction.channel.bulkDelete(
           recentMessages,
-          true
+          true,
         );
         totalMessagesDeleted += deleted.size;
       }
@@ -101,7 +101,9 @@ export default {
         try {
           await msg.delete();
           totalMessagesDeleted++;
-          await new Promise((r) => setTimeout(r, 1000));
+          await new Promise((resolve) => {
+            setTimeout(resolve, 1000);
+          });
         } catch (err) {
           console.error("Erro ao deletar mensagem antiga:", msg.id, err);
         }
@@ -110,7 +112,7 @@ export default {
       const embed = new EmbedBuilder()
         .setTitle("🗑️ Mensagens Deletadas")
         .setDescription(
-          `**Total apagado:** ${totalMessagesDeleted} mensagem(ns)`
+          `**Total apagado:** ${totalMessagesDeleted} mensagem(ns)`,
         )
         .setColor(0x2ecc71)
         .setTimestamp();

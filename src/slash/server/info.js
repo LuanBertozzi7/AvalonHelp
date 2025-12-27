@@ -2,17 +2,24 @@ import { EmbedBuilder, SlashCommandBuilder } from "discord.js";
 
 export default {
   data: new SlashCommandBuilder()
-    .setName("serverinfo")
-    .setDescription("Informações sobre o servidor"),
+    .setName("servidor")
+    .setDescription("Informações sobre o servidor")
+    .addSubcommand((sub) =>
+      sub.setName("info").setDescription("informações sobre o servidor"),
+    ),
+
   async execute(interaction) {
     const user = interaction.user;
     const member = interaction.member;
     const guild = interaction.guild;
     const owner = interaction.guild.fetchOwner();
 
+    const subCommand = interaction.options.getSubcommand("info");
+    if (!subCommand === "info") return;
+
     const roles =
       member.roles.cache
-        .filter((role) => role.id != guild.id)
+        .filter((role) => role.id !== guild.id)
         .map((role) => role.toString())
         .join(", ") || "Sem cargos no servidor...";
 
@@ -50,7 +57,7 @@ export default {
           name: "Cargos:",
           value: `** - ${roles}**`,
           inline: false,
-        }
+        },
       )
       .setFooter({
         text: `Servidor: ${guild.name}`,

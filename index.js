@@ -17,7 +17,7 @@ client.once(Events.ClientReady, (readyClient) => {
   const guildCount = readyClient.guilds.cache.size;
   const userCount = readyClient.guilds.cache.reduce(
     (acc, guild) => acc + guild.memberCount,
-    0
+    0,
   );
 
   console.log("=================================");

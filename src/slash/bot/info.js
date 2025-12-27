@@ -8,7 +8,7 @@ export default {
     .setName("avalon")
     .setDescription("AvalonHelp")
     .addSubcommand((sub) =>
-      sub.setName("info").setDescription("Mostara informações sobre o Avalon!")
+      sub.setName("info").setDescription("Mostara informações sobre o Avalon!"),
     ),
 
   async execute(interaction) {
@@ -34,11 +34,11 @@ export default {
             `**Servidores:** ${interaction.client.guilds.cache.size}`,
             `**Usuários:** ${interaction.client.guilds.cache.reduce(
               (acc, guild) => acc + guild.memberCount,
-              0
+              0,
             )}`,
             `**Author:** [Luan Bertozzi](https://github.com/LuanBertozzi7)`,
             `**Uptime:** ${Math.floor(
-              interaction.client.uptime / 1000 / 60
+              interaction.client.uptime / 1000 / 60,
             )} minutos`,
           ].join("\n"),
           inline: true,
@@ -51,7 +51,7 @@ export default {
             `**OS:** ${os.type()} ${os.release()}`,
             `**CPU:** ${cpuModel}`,
             `**RAM:** ${toMB(usedMem)}MB / ${toMB(
-              totalRAM
+              totalRAM,
             )}MB (${memusagePercent}%)`,
           ].join("\n"),
           inline: false,
@@ -64,7 +64,7 @@ export default {
             `https://developer.mozilla.org/pt-BR/docs/Web/JavaScript`,
           ].join("\n"),
           inline: false,
-        }
+        },
       )
       .setTimestamp();
 

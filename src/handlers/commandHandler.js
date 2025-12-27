@@ -50,8 +50,8 @@ export async function loadCommands(client) {
       console.warn(
         `[WARNING] Ignorando ${path.relative(
           commandsPath,
-          filePath
-        )}: comando inválido`
+          filePath,
+        )}: comando inválido`,
       );
       continue;
     }
@@ -60,8 +60,8 @@ export async function loadCommands(client) {
       console.log(
         `[INFO] Ignorando ${command.data.name} (${path.relative(
           commandsPath,
-          filePath
-        )}): fora do filtro`
+          filePath,
+        )}): fora do filtro`,
       );
       continue;
     }

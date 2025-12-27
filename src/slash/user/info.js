@@ -1,59 +1,59 @@
-import { EmbedBuilder, SlashCommandBuilder } from 'discord.js';
+import { EmbedBuilder, SlashCommandBuilder } from "discord.js";
 
 export default {
   data: new SlashCommandBuilder()
-    .setName('user')
-    .setDescription('Obter informações sobre um usuário')
+    .setName("usuario")
+    .setDescription("Obter informações sobre um usuário")
     .addSubcommand((sub) =>
       sub
-        .setName('info')
-        .setDescription('Exibe informações sobre o usuário')
+        .setName("info")
+        .setDescription("Exibe informações sobre o usuário")
         .addUserOption((option) =>
           option
-            .setName('username')
-            .setDescription('Selecione o usuário')
-            .setRequired(false)
-        )
+            .setName("username")
+            .setDescription("Selecione o usuário")
+            .setRequired(false),
+        ),
     ),
   async execute(interaction) {
     await interaction.deferReply();
-    const user = interaction.options.getUser('username') || interaction.user;
+    const user = interaction.options.getUser("username") || interaction.user;
     const member =
-      interaction.options.getMember('username') || interaction.member;
+      interaction.options.getMember("username") || interaction.member;
 
     // timestamp calculator
     const createdTimestamp = Math.floor(user.createdTimestamp / 1000);
     const accountAgeDays = Math.floor(
-      (Date.now() - createdTimestamp) / 86400000
+      (Date.now() - createdTimestamp) / 86400000,
     );
 
     const guild = interaction.guild;
 
     const userEmbed = new EmbedBuilder()
       .setColor(0x2f3136)
-      .setTitle('Informações sobre o usuário!')
+      .setTitle("Informações sobre o usuário!")
       .setThumbnail(user.displayAvatarURL({ size: 512, dynamic: true }))
       .addFields(
         // User Name
         {
-          name: 'Nome:',
+          name: "Nome:",
           value: `**${user.username}**`,
           inline: false,
         },
         // User ID
         {
-          name: 'ID:',
+          name: "ID:",
           value: `**${user.id}**`,
           inline: false,
         },
         // Account Creation Date
         {
-          name: 'Conta criada:',
+          name: "Conta criada:",
           value: `<t:${Math.floor(
-            user.createdTimestamp / 1000
+            user.createdTimestamp / 1000,
           )}:F> (${accountAgeDays} dias)`,
           inline: false,
-        }
+        },
       ) // addFields
       // Footer
       .setFooter({
@@ -67,7 +67,7 @@ export default {
     if (member) {
       const joinedTimestamp = Math.floor(member.joinedTimestamp / 1000);
       const memberAgeDays = Math.floor(
-        (Date.now() - joinedTimestamp) / 86400000
+        (Date.now() - joinedTimestamp) / 86400000,
       );
 
       // get roles
@@ -79,27 +79,27 @@ export default {
 
       // special roles
       const isBooster = member.premiumSince !== null;
-      const hasAdmin = member.permissions.has('Administrator');
+      const hasAdmin = member.permissions.has("Administrator");
       const hasMod =
-        member.permissions.has('ModerateMembers') ||
-        member.permissions.has('KickMembers') ||
-        member.permissions.has('BanMembers');
+        member.permissions.has("ModerateMembers") ||
+        member.permissions.has("KickMembers") ||
+        member.permissions.has("BanMembers");
 
       // curious
       const curiosity = [];
 
       if (user.bot) {
-        curiosity.push('é um bot');
+        curiosity.push("é um bot");
       }
 
       if (isBooster) {
-        curiosity.push('🚀 Booster');
+        curiosity.push("🚀 Booster");
       }
 
       if (hasAdmin) {
-        curiosity.push('Admin');
+        curiosity.push("Admin");
       } else if (hasMod) {
-        curiosity.push('🔧 Mod');
+        curiosity.push("🔧 Mod");
       }
 
       // muted?
@@ -107,40 +107,40 @@ export default {
         member.communicationDisabledUntil &&
         member.communicationDisabledUntil > Date.now()
       ) {
-        curiosity.push('🔇 Temporariamente Silenciado!');
+        curiosity.push("🔇 Temporariamente Silenciado!");
       }
 
       const memberEmbed = new EmbedBuilder()
         .setColor(0x2f3136)
-        .setTitle('Informações sobre o Membro!')
+        .setTitle("Informações sobre o Membro!")
         .setThumbnail(user.displayAvatarURL({ size: 512, dynamic: true }))
         .addFields(
           {
-            name: 'Entrou no Servidor em',
+            name: "Entrou no Servidor em",
             value: `<t:${joinedTimestamp}:f>\n(há ${memberAgeDays} dias)`,
             inline: false,
           },
           {
-            name: 'Maior Cargo',
+            name: "Maior Cargo",
             value: `${member.roles.highest}`,
             inline: true,
           },
           {
-            name: 'Total de Cargos',
+            name: "Total de Cargos",
             value: `${member.roles.cache.size - 1}`,
             inline: true,
           },
           {
-            name: 'Nota:',
-            value: curiosity.join('\n'),
+            name: "Nota:",
+            value: curiosity.join("\n"),
             inline: false,
-          }
+          },
         );
 
       if (roles.length > 0) {
         memberEmbed.addFields({
           name: `Cargos [${roles.length}]`,
-          value: roles.join(', '),
+          value: roles.join(", "),
           inline: true,
         });
       }
@@ -148,7 +148,7 @@ export default {
       if (isBooster) {
         const boostTimestamp = Math.floor(member.premiumSince / 1000);
         memberEmbed.addFields({
-          name: 'Impulsionado o servidor desde',
+          name: "Impulsionado o servidor desde",
           value: `<t:${boostTimestamp}:f>`,
           inline: false,
         });

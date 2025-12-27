@@ -7,7 +7,7 @@ export default {
 
   async execute(member) {
     const channel = member.guild.channels.cache.get(
-      welcomeConfig.welcomeChannelId
+      welcomeConfig.welcomeChannelId,
     );
 
     if (!channel) return;
@@ -16,7 +16,7 @@ export default {
       .setColor(11027200) // dark orange
       .setTitle("Bem vindo(a)!")
       .setDescription(
-        `${member} Entrou no **${member.guild.name}**!\n ` + `ID: ${member.id}`
+        `${member} Entrou no **${member.guild.name}**!\n ` + `ID: ${member.id}`,
       )
       .setThumbnail(member.user.displayAvatarURL({ dynamic: true }))
       .setFooter({

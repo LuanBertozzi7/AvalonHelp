@@ -23,7 +23,7 @@ export default {
     const stopCommands = ["!stop", "!avalon"];
 
     const shouldStop = stopCommands.some(
-      (cmd) => content === cmd || content.startsWith(cmd + " ")
+      (cmd) => content === cmd || content.startsWith(cmd + " "),
     );
 
     // 4. If user asked the bot to stop, clear context and confirm
@@ -37,7 +37,7 @@ export default {
     const genericMessages = ["boa noite", "bom dia", "boa tarde"];
 
     const isGenericMessage = genericMessages.some(
-      (msg) => content === msg || content.startsWith(msg + " ")
+      (msg) => content === msg || content.startsWith(msg + " "),
     );
 
     // 6. Context window per channel
