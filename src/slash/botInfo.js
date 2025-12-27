@@ -5,18 +5,23 @@ const toMB = (bytes) => (bytes / 1024 / 1024).toFixed(0);
 
 export default {
   data: new SlashCommandBuilder()
-    .setName("botinfo")
-    .setDescription("Mostra informações sobre o bot!"),
+    .setName("avalon")
+    .setDescription("AvalonHelp")
+    .addSubcommand((sub) =>
+      sub.setName("info").setDescription("Mostara informações sobre o Avalon!")
+    ),
 
   async execute(interaction) {
     const botUser = interaction.client.user;
-
     const totalRAM = os.totalmem();
     const freeRAM = os.freemem();
     const usedMem = totalRAM - freeRAM;
     const memusagePercent = ((usedMem / totalRAM) * 100).toFixed(1);
-
     const cpuModel = os.cpus()[0].model;
+
+    const subCommand = interaction.options.getSubcommand();
+
+    if (!subCommand === "info") return;
 
     const embed = new EmbedBuilder()
       .setColor(0x2f3136)

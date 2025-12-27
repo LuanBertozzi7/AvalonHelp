@@ -10,7 +10,7 @@ const __dirname = path.dirname(__filename);
 const rest = new REST({ version: "10" }).setToken(process.env.BOT_TOKEN);
 
 async function loadSlashCommands() {
-  const commandsDir = path.join(__dirname, "slashCommand");
+  const commandsDir = path.join(__dirname, "slash");
   const files = fs.readdirSync(commandsDir).filter((f) => f.endsWith(".js"));
 
   const commands = [];
@@ -30,10 +30,7 @@ async function loadSlashCommands() {
 async function deploy() {
   const commands = await loadSlashCommands();
   const route = process.env.GUILD_ID
-    ? Routes.applicationGuildCommands(
-        process.env.BOT_ID,
-        process.env.GUILD_ID
-      )
+    ? Routes.applicationGuildCommands(process.env.BOT_ID, process.env.GUILD_ID)
     : Routes.applicationCommands(process.env.BOT_ID);
 
   try {
