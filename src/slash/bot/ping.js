@@ -1,9 +1,9 @@
-import { SlashCommandBuilder, EmbedBuilder } from "discord.js";
+import { SlashCommandBuilder, EmbedBuilder } from 'discord.js';
 
 export default {
   data: new SlashCommandBuilder()
-    .setName("ping")
-    .setDescription("Responde com pong"),
+    .setName('ping')
+    .setDescription('Responde com pong'),
 
   async execute(interaction) {
     const client = interaction.client;
@@ -19,7 +19,7 @@ export default {
     const embed = new EmbedBuilder()
       .setColor(0x2f3136)
       .setAuthor({
-        name: "Pong!",
+        name: 'Pong!',
         iconURL: client.user.displayAvatarURL(),
       })
       .setDescription(
@@ -27,7 +27,7 @@ export default {
           `**Shard:** ${shardId + 1}/${totalShards}`,
           `**Gateway Ping:** ${gatewayPing}ms`,
           `**API Ping:** ${ping}ms`,
-        ].join("\n")
+        ].join('\n')
       )
       .setFooter({
         text: `${client.user.username}`,
