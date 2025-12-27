@@ -5,7 +5,7 @@
   "scripts": {
     "dev": "node index.js",
     "nodemon": "nodemon index.js",
-    "deploy-commands": "node src/deploy.js",
+    "deploy-commands": "node src/deploy-commands.js",
     "cleanup-commands": "node ./utils/cleanupCommands.js"
   },
   "keywords": [],

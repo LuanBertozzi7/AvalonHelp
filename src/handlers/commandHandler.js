@@ -1,23 +1,73 @@
 import fs from "node:fs";
 import path from "node:path";
-import { fileURLToPath } from "node:url";
+import { pathToFileURL } from "node:url";
 
-const __filename = fileURLToPath(import.meta.url); // Get the current {{ file.js }} path
-const __dirname = path.dirname(__filename); // Get the current {{ directory }} path
+function collectSlashFiles(dir) {
+  const entries = fs.readdirSync(dir, { withFileTypes: true });
+  const files = [];
+
+  for (const entry of entries) {
+    const fullPath = path.join(dir, entry.name);
+
+    if (entry.isDirectory()) {
+      files.push(...collectSlashFiles(fullPath));
+    } else if (entry.isFile() && entry.name.endsWith(".js")) {
+      files.push(fullPath);
+    }
+  }
+
+  return files;
+}
+
+function getAllowList() {
+  const allowListEnv = process.env.COMMAND_ALLOWLIST || process.env.COMMANDS;
+  if (!allowListEnv) return null;
+
+  return allowListEnv
+    .split(",")
+    .map((name) => name.trim())
+    .filter(Boolean);
+}
 
 export async function loadCommands(client) {
-  client.commands = new Map(); // Initialize command's collection { "ping", {data: ..., execute: ...} }
+  client.commands = new Map(); // { "ping": { data, execute } }
 
-  const commandsPath = path.join(__dirname, "../slashCommand");
-  
-  const commandFiles = fs
-    .readdirSync(commandsPath) // Read all files in slashCommand
-    .filter((file) => file.endsWith(".js")); // filter only .js files
+  const commandsPath = path.join(process.cwd(), "src/slash");
 
-  for (const file of commandFiles) {
-    const filePath = path.join(commandsPath, file);
-    const command = await import(filePath);
-
-    client.commands.set(command.default.data.name, command.default);
+  if (!fs.existsSync(commandsPath)) {
+    console.warn(`Pasta de comandos não encontrada: ${commandsPath}`);
+    return;
   }
+
+  const commandFiles = collectSlashFiles(commandsPath);
+  const allowList = getAllowList();
+
+  for (const filePath of commandFiles) {
+    const commandModule = await import(pathToFileURL(filePath));
+    const command = commandModule.default;
+
+    if (!command?.data || !command?.execute) {
+      console.warn(
+        `[WARNING] Ignorando ${path.relative(
+          commandsPath,
+          filePath
+        )}: comando inválido`
+      );
+      continue;
+    }
+
+    if (allowList && !allowList.includes(command.data.name)) {
+      console.log(
+        `[INFO] Ignorando ${command.data.name} (${path.relative(
+          commandsPath,
+          filePath
+        )}): fora do filtro`
+      );
+      continue;
+    }
+
+    client.commands.set(command.data.name, command);
+  }
+
+  console.log(`Carregados ${client.commands.size} slash commands`);
 }
