@@ -13,3 +13,4 @@ process.on("uncaughtException", (error) => {
 });
 
 await loadEvents(client);
+client.login(process.env.BOT_TOKEN);

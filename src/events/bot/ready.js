@@ -1,5 +1,4 @@
 import { Events } from "discord.js";
-import { client } from "./src/client.js";
 
 export default {
   name: Events.ClientReady,
@@ -9,5 +8,3 @@ export default {
     console.log("Avalon Online!");
   },
 };
-
-client.login(process.env.BOT_TOKEN); 
