@@ -3,10 +3,10 @@ import path from "path";
 import { pathToFileURL } from "url";
 
 export async function loadEvents(client) {
-  const eventsPath = path.join(process.cwd(), "src/events");
+  const eventsPath = path.join(process.cwd(), "src/events"); // current dir
   const eventFiles = fs
-    .readdirSync(eventsPath)
-    .filter((file) => file.endsWith(".js"));
+    .readdirSync(eventsPath) // just .js in current dir src/events
+    .filter((file) => file.endsWith(".js")); 
 
   for (const file of eventFiles) {
     const filePath = path.join(eventsPath, file);

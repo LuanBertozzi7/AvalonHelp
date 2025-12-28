@@ -2,6 +2,7 @@ import { Events } from "discord.js";
 
 export default {
   name: Events.InteractionCreate,
+  once: false,
 
   async execute(interaction) {
     if (!interaction.isChatInputCommand()) return; // is command?
