@@ -1,14 +1,14 @@
 import { Events, EmbedBuilder } from "discord.js";
-import welcomeConfig from "../../config/welcome.json" with { type: "json" };
+import { channelsConfig } from "../../config/channel-config.json" with { type: "json" };
 
 export default {
   name: Events.GuildMemberAdd,
   once: false,
 
-  async execute(member, client) {
+  async execute(member) {
     try {
       const channel = await member.guild.channels
-        .fetch(welcomeConfig.welcomeChannelId)
+        .fetch(channelsConfig.welcome)
         .catch(() => null);
 
       if (!channel || !channel.isTextBased()) {
@@ -28,7 +28,16 @@ export default {
 
       await channel.send({ embeds: [embed] });
     } catch (error) {
-      console.error("ocorreu um erro ao enviar a mensagem de boas vindas em " + welcomeConfig.welcomeChannelId, error);
+      const channel = await member.guild.channels
+        .fetch(channelsConfig.log)
+        .catch(() => null);
+      
+      if (channel && channel.isTextBased()) {
+        await channel.send(
+          "erro ao enviar mensagem de boas-vindas em " + channelsConfig.welcome
+        );
+      }
+      console.error(error);
     }
   },
 };
